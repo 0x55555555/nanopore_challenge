@@ -1,18 +1,13 @@
 #include <iostream>
 #include "Generator.h"
 #include "SharedBuffer.h"
+#include "ConstantParameters.h"
 #include <unistd.h>
-
-const size_t count = 1000000; // Random numbers to generate in one phase
-const size_t bufferCount = 10;
-const int microsecondsInSecond = 1000 * 1000;
-const int delay = 1; // Wait period - seconds
-typedef float real_type;
 
 int generateRandomData(const char *name)
   {
-  boost::interprocess::shared_memory_object::remove(name);
-  boost::interprocess::named_mutex::remove((std::string(name) + "_mutex").data());
+  // Wipe down the memory in the generator - we are about to recreate it and fill.
+  SharedBuffer::remove(name);
 
   // Create a shared buffer called [sharedMemoryName], large enough to hold [count] * [bufferCount] real_type's.
   SharedBuffer buffer(

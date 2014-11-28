@@ -9,7 +9,13 @@ class SharedBuffer
   {
 public:
   /// \brief Create a buffer called [name]
-  SharedBuffer(const char *name, size_t size);
+  SharedBuffer(const std::string &name, size_t size);
+
+  /// \brief Open a buffer called [name]
+  SharedBuffer(const std::string &name);
+
+  /// \brief Delete the shared memory object from disk
+  static void remove(const std::string &name);
 
 private:
   boost::interprocess::shared_memory_object m_sharedMemory;

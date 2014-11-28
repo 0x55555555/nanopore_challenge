@@ -14,6 +14,7 @@ SOURCES += \
 
 HEADERS += \
     Generator.h \
-    SharedBuffer.h
+    SharedBuffer.h \
+    ConstantParameters.h
 
 INCLUDEPATH += ../../boost_1_57_0

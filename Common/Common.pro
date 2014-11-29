@@ -11,14 +11,16 @@ macx {
 
 SOURCES += \
     SharedBuffer.cpp \
-    GeneratedBuffer.cpp
+    GeneratedBuffer.cpp \
+    Hdf5Utils.cpp
 
 HEADERS += \
     Generator.h \
     SharedBuffer.h \
     ConstantParameters.h \
     GeneratedBuffer.h \
-    GeneratedBufferArray.h
+    GeneratedBufferArray.h \
+    Hdf5Utils.h
 
 INCLUDEPATH += ../../hdf5/include ../../boost_1_57_0
 

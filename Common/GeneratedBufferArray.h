@@ -6,9 +6,9 @@
 class GeneratedBufferArray
   {
 public:
-  GeneratedBuffer *at(size_t i)
+  GeneratedBuffer &at(size_t i)
     {
-    return &m_elements.at(i);
+    return m_elements.at(i);
     }
 
   size_t size() const

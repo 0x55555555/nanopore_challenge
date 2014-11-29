@@ -29,10 +29,10 @@ int generateRandomData(const char *name)
 
     {
       // Find the buffer to generate into
-      GeneratedBuffer *generatedBuffer = buffer.data()->at(bufferIdx);
+      auto &generatedBuffer = buffer.data()->at(bufferIdx);
 
       // Lock the data inside the buffer, exposing the floats for generation
-      LockedData lockedData(generatedBuffer);
+      LockedData lockedData(&generatedBuffer);
       auto data = lockedData.data();
 
       // Generate into [count] elements into [data].

@@ -32,11 +32,11 @@ int transformData(const char *nameIn, const char *nameOut)
     std::cout << "  Transforming block " << i << std::endl;
 
     // Lock and write our data to the file.
-    LockedData lockedDataIn(bufferIn.data()->at(i));
-    auto dataIn = lockedDataIn.data();
+    LockedData lockedDataIn(&bufferIn.data()->at(i), LockedData::ConstOnly);
+    auto dataIn = lockedDataIn.constData();
 
     // Lock and write our data to the file.
-    LockedData lockedDataOut(bufferOut.data()->at(i));
+    LockedData lockedDataOut(&bufferOut.data()->at(i));
     auto dataOut = lockedDataOut.data();
 
     // Transform the data in [dataIn] into the data in [dataOut]

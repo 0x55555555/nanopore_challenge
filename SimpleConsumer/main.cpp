@@ -17,7 +17,7 @@ int comsumeData(const char *name, const char *outputName)
   plist.setFillValue(H5::PredType::NATIVE_FLOAT, &fillvalue);
 
   // Create a dataset with [count] rows.
-  hsize_t fdim[] = { count };
+  hsize_t fdim[] = { BlockElementCount * BufferCount };
   H5::DataSpace fspace( 1, fdim );
 
   static_assert(
@@ -25,19 +25,17 @@ int comsumeData(const char *name, const char *outputName)
       "Need to adjust the PredType if real_type changes");
 
   // Create our new dataset - filled with xero by default.
-  H5::DataSet* dataset = new H5::DataSet(
-    file.createDataSet(
+  H5::DataSet dataset = file.createDataSet(
       "RandomData",
       H5::PredType::NATIVE_FLOAT,
       fspace,
-      plist)
-    );
+      plist);
 
   // Lock and write our data to the file.
-  TypedLockedData<real_type> lockedData(&buffer);
-  auto data = lockedData.data();
+  TypedLockedData<real_type> lockedData(&buffer, 0, BufferSize);
+  auto data = lockedData.constData();
 
-  dataset->write(data, H5::PredType::NATIVE_FLOAT);
+  dataset.write(data, H5::PredType::NATIVE_FLOAT);
 
   return 1;
   }

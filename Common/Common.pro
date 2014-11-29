@@ -10,11 +10,14 @@ macx {
 }
 
 SOURCES += \
-    SharedBuffer.cpp
+    SharedBuffer.cpp \
+    GeneratedBuffer.cpp
 
 HEADERS += \
     Generator.h \
     SharedBuffer.h \
-    ConstantParameters.h
+    ConstantParameters.h \
+    GeneratedBuffer.h \
+    GeneratedBufferArray.h
 
 INCLUDEPATH += ../../boost_1_57_0

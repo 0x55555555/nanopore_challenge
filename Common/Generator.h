@@ -16,11 +16,11 @@ public:
     }
 
   /// \brief Generate [count] numbers into [destination].
-  void generate(
-      RealType *destination, ///< Destination values
-      size_t count) ///< Number of values to generate
+  /// \param[out] destination The array like object to generate into.
+  template <typename T>
+    void generate(T &destination)
     {
-    for (size_t i = 0; i < count; ++i)
+    for (size_t i = 0; i < destination.size(); ++i)
       {
       destination[i] = m_dis(m_gen);
       }

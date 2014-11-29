@@ -1,8 +1,17 @@
 #include "GeneratedBuffer.h"
+#include "H5Cpp.h"
 
 GeneratedBuffer::GeneratedBuffer()
     : m_revisionCount(0)
   {
+  }
+
+H5::DataSpace GeneratedBuffer::createDataSpace()
+  {
+  hsize_t readdim[] = { BlockElementCount };
+  H5::DataSpace readspace( 1, readdim );
+
+  return readspace;
   }
 
 LockedData::LockedData(GeneratedBuffer *buf)

@@ -11,6 +11,11 @@ public:
     return &m_elements.at(i);
     }
 
+  size_t size() const
+    {
+    return m_elements.size();
+    }
+
 private:
   std::array<GeneratedBuffer, BufferCount> m_elements;
   };

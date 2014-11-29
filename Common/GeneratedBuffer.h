@@ -6,6 +6,11 @@
 #include <boost/interprocess/sync/scoped_lock.hpp>
 #include <boost/interprocess/sync/interprocess_condition.hpp>
 
+namespace H5
+{
+class DataSpace;
+}
+
 class GeneratedBuffer
   {
 public:
@@ -15,6 +20,9 @@ public:
 
   /// \brief Create a new buffer
   GeneratedBuffer();
+
+  /// \brief Format a dataspace to read the data form this buffer
+  H5::DataSpace createDataSpace();
 
 private:
   Buffer m_elements;

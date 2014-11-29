@@ -20,4 +20,7 @@ HEADERS += \
     GeneratedBuffer.h \
     GeneratedBufferArray.h
 
-INCLUDEPATH += ../../boost_1_57_0
+INCLUDEPATH += ../../hdf5/include ../../boost_1_57_0
+
+LIBS += -L../../hdf5/lib -lhdf5_hl_cpp -lhdf5_cpp -lhdf5_hl -lhdf5
+

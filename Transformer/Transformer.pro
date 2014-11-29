@@ -1,6 +1,6 @@
 QT       -= core gui
 
-TARGET = SimpleConsumer
+TARGET = Transformer
 CONFIG   += console
 CONFIG   -= app_bundle
 DESTDIR = ../bin

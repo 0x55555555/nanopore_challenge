@@ -9,8 +9,6 @@ int comsumeData(const char *name, const char *outputName)
   // Create a shared buffer called [sharedMemoryName], large enough to hold [count] * [bufferCount] real_type's.
   TypedSharedBuffer<GeneratedBufferArray> buffer(name, boost::interprocess::open_only);
 
-  H5::H5File file(outputName, H5F_ACC_TRUNC);
-
   // Initialise the properties for our data set
   H5::DSetCreatPropList plist;
   // Fill with zero by default.
@@ -28,12 +26,16 @@ int comsumeData(const char *name, const char *outputName)
       "Need to adjust the PredType if real_type changes");
 
   // Create our new dataset - filled with xero by default.
+  H5::H5File file(outputName, H5F_ACC_TRUNC);
   H5::DataSet dataset = file.createDataSet(
       "RandomData",
       H5::PredType::NATIVE_FLOAT,
       fspace,
       plist);
 
+  // Create a space to write to the file with.
+  // This is changed in the loop below to point at
+  // each of the sub elements of the generated buffer.
   H5::DataSpace writespace( 2, fdim );
   hsize_t start[2] = { 0, 0 }; // Start of hyperslab
   hsize_t block[2] = { BlockElementCount, 1 };  // Block sizes
@@ -43,12 +45,15 @@ int comsumeData(const char *name, const char *outputName)
     {
     std::cout << "  Writing block " << i << std::endl;
     
+    // Lock access to the data in the shared buffer.
     GeneratedBuffer *genBuffer = buffer.data()->at(i);
     LockedData lockedData(genBuffer);
     auto data = lockedData.constData();
 
+    // Find a read space for the input buffer
     H5::DataSpace readspace = genBuffer->createDataSpace();
 
+    // Point the output space at the right sub elements.
     start[1] = i;
     writespace.selectHyperslab(H5S_SELECT_SET, block, start);
 

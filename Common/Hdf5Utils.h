@@ -10,7 +10,9 @@
 /// \return The dataset with space for the new data.
 H5::DataSet createBufferHdfDataSet(H5::H5File file, const char *name, size_t bufferCount);
 
-
+/// \brief Write all the data in [input] to the [dataset].
+/// This function expects the [dataset] to accomodate the number of elements data in input.
+/// \note [input] should present an array which can be queried for size() and an element at(index).
 template <typename T> void storeBufferToDataSet(H5::DataSet dataset, T &input)
   {
   // Create a space to write to the file with.

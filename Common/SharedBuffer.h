@@ -38,11 +38,13 @@ public:
     {
     }
 
+  /// \brief Construct the object into the shared memory.
   void initialise()
     {
     new(data()) T();
     }
 
+  /// \brief Get access to the shared object.
   T *data()
     {
     return reinterpret_cast<T *>(SharedBuffer::data());

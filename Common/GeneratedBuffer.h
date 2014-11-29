@@ -14,6 +14,8 @@ class DataSpace;
 
 class LockedData;
 
+/// \brief A container for a single block of generated data
+/// \note Uses size information in [ConstantParameters.h]
 class GeneratedBuffer
   {
 public:
@@ -30,6 +32,7 @@ public:
   /// \brief Find the revision for this block - increased each time someone locks for writing.
   size_t revision() const { return m_revisionCount; }
 
+  /// \brief Wait for m_revisionCount to change (via another process).
   void waitForChange(LockedData *lock);
 
 private:

@@ -50,8 +50,6 @@ int transformData(const char *nameIn, const char *nameOut)
   return 1;
   }
 
-
-
 int main(int argc, char *argv[])
   {
   if (argc != 3)

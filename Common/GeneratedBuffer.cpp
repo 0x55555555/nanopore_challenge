@@ -8,6 +8,7 @@ GeneratedBuffer::GeneratedBuffer()
 
 H5::DataSpace GeneratedBuffer::createDataSpace()
   {
+  // Create a dataspace representing a this object as a single "row" of data.
   hsize_t readdim[] = { BlockElementCount };
   H5::DataSpace readspace( 1, readdim );
 
@@ -18,7 +19,11 @@ void GeneratedBuffer::waitForChange(LockedData *lock)
   {
   size_t rev = m_revisionCount;
 
-  m_condition.wait(*lock, [this, rev](){ return rev != m_revisionCount; });
+  // Wait will unlock [lock], and loop checking the predicate passed
+  m_condition.wait(
+    *lock,
+    [this, rev](){ return rev != m_revisionCount; }
+    );
   }
 
 LockedData::LockedData(GeneratedBuffer *buf, Mode mode)
@@ -30,6 +35,7 @@ LockedData::LockedData(GeneratedBuffer *buf, Mode mode)
 
 LockedData::~LockedData()
   {
+  // Only inform of changes if we were changing the data.
   if (!m_constLock)
     {
     // Increase the revision count so users of the buffer know its changed.

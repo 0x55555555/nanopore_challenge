@@ -7,50 +7,63 @@
 #include "Hdf5Utils.h"
 #include "H5Cpp.h"
 
-int comsumeData(const char *name, const char *outputName, size_t blockCount)
+int comsumeData(const char *name, const std::string &filePrefix, const std::string &fileSuffix)
   {
-  // Create a shared buffer called [sharedMemoryName], large enough to hold [count] * [bufferCount] real_type's.
-  TypedSharedBuffer<GeneratedBufferArray> buffer(name, boost::interprocess::open_only);
-
   // Store an id for the last revisions used when copying from the source buffers
   std::vector<size_t> revision(BufferCount, std::numeric_limits<size_t>::max());
 
-  // Generated arrays for output data
-  std::vector<GeneratedBuffer> outputElements(blockCount);
+  size_t blockPosition = 0;
 
-  std::cout << "Creating local data copy" << outputName << std::endl;
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::uniform_int_distribution<size_t> rand(3, 25);
 
-  // Lock and write our data to the file.
-  for (size_t i = 0; i < blockCount; ++i)
+  for(int i = 0; true; ++i)
     {
-    std::cout << "  Constructing block " << i << std::endl;
+    const size_t blockCount = rand(gen);
 
-    // Find the block we want to read from.
-    size_t blockIndex = i % BufferCount;
+    std::string filename = filePrefix + "_" + std::to_string(i) + "." + fileSuffix;
 
-    // Lock access to the data in the shared buffer.
-    auto &inputBlock = buffer.data()->at(blockIndex);
-    auto &outputBlock = outputElements[i];
+    // Create a shared buffer called [sharedMemoryName], large enough to hold [count] * [bufferCount] real_type's.
+    TypedSharedBuffer<GeneratedBufferArray> buffer(name, boost::interprocess::open_only);
 
-    // Find a new piece of data in inputBlock
-    LockedData lockedInput(&inputBlock, LockedData::ConstOnly);
-    if (revision[blockIndex] == inputBlock.revision())
+    // Generated arrays for output data
+    std::vector<GeneratedBuffer> outputElements(blockCount);
+
+    std::cout << "Creating local data copy" << filename << std::endl;
+
+    // Lock and write our data to the file.
+    for (size_t i = 0; i < blockCount; ++i, ++blockPosition)
       {
-      // This will block until revision is increased.
-      inputBlock.waitForChange(&lockedInput);
+      std::cout << "  Constructing block " << i << std::endl;
+
+      // Find the block we want to read from.
+      size_t blockIndex = blockPosition % BufferCount;
+
+      // Lock access to the data in the shared buffer.
+      auto &inputBlock = buffer.data()->at(blockIndex);
+      auto &outputBlock = outputElements[i];
+
+      // Find a new piece of data in inputBlock
+      LockedData lockedInput(&inputBlock, LockedData::ConstOnly);
+      if (revision[blockIndex] == inputBlock.revision())
+        {
+        // This will block until revision is increased.
+        inputBlock.waitForChange(&lockedInput);
+        }
+      revision[blockIndex] = inputBlock.revision();
+
+      LockedData lockedOutput(&outputBlock);
+      *lockedOutput.data() = *lockedInput.constData();
       }
-    revision[blockIndex] = inputBlock.revision();
 
-    LockedData lockedOutput(&outputBlock);
-    *lockedOutput.data() = *lockedInput.constData();
+    // Now save our generated data to file.
+    H5::H5File file(filename.data(), H5F_ACC_TRUNC);
+    H5::DataSet dataset = createBufferHdfDataSet(file, "RandomData", blockCount);
+
+    std::cout << "Writing data to file " << filename << std::endl;
+    storeBufferToDataSet(dataset, outputElements);
     }
-
-  // Now save our generated data to file.
-  H5::H5File file(outputName, H5F_ACC_TRUNC);
-  H5::DataSet dataset = createBufferHdfDataSet(file, "RandomData", blockCount);
-
-  std::cout << "Writing data to file " << outputName << std::endl;
-  storeBufferToDataSet(dataset, outputElements);
 
   return 1;
   }
@@ -63,11 +76,15 @@ int main(int argc, char *argv[])
     return 0;
     }
 
-  std::random_device rd;
-  std::mt19937 gen(rd());
-  std::uniform_int_distribution<size_t> rand(3, 25);
+  std::string prefix = argv[2];
+  std::string suffix;
+  if (auto lastDot = prefix.rfind("."))
+    {
+    suffix = prefix.data() + lastDot + 1;
 
-  // Consume a random (3 -> 25) amount of data.
-  comsumeData(argv[1], argv[2], rand(gen));
+    prefix.resize(lastDot);
+    }
+
+  comsumeData(argv[1], prefix, suffix);
   return 1;
   }

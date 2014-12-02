@@ -2,17 +2,17 @@
 #include <boost/interprocess/shared_memory_object.hpp>
 #include <boost/interprocess/mapped_region.hpp>
 
-/// \brief A ring buffer shared in on the local machine
+/// \brief A buffer shared on the local machine
 class SharedBuffer
   {
 public:
-  /// \brief Create a buffer called [name]
+  /// \brief Create, or open a buffer called [name], with [size].
   SharedBuffer(const std::string &name, size_t size, boost::interprocess::open_or_create_t);
 
-  /// \brief Open a buffer called [name]
+  /// \brief Open a buffer called [name], the size is defined by the creator.
   SharedBuffer(const std::string &name, boost::interprocess::open_only_t);
 
-  /// \brief Get the data in the shared object
+  /// \brief Get the data in the shared object.
   void *data();
 
   /// \brief Delete the shared memory object from disk

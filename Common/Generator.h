@@ -2,7 +2,7 @@
 #include <random>
 
 /// \brief Generate random numbers
-/// \tparam RealType Expects float, double or long double
+/// \tparam RealType The type of number to generate. Expects float, double or long double.
 template <typename RealType> class Generator
   {
 public:
@@ -15,7 +15,7 @@ public:
     {
     }
 
-  /// \brief Generate [count] numbers into [destination].
+  /// \brief Fill [destination] with randomly generated numbers.
   /// \param[out] destination The array like object to generate into.
   template <typename T>
     void generate(T &destination)

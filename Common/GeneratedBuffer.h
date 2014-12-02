@@ -19,20 +19,22 @@ class LockedData;
 class GeneratedBuffer
   {
 public:
-  /// \brief a fixed size buffer of real_types for generating into
-  /// \note access using the [LockedData] class.
+  /// \brief A fixed size buffer of [real_type]'s for generating into
+  /// \note Access using the [LockedData] class.
   typedef std::array<real_type, BlockElementCount> Buffer;
 
   /// \brief Create a new buffer
   GeneratedBuffer();
 
-  /// \brief Format a dataspace to read the data form this buffer
+  /// \brief Format a dataspace to read the data from this buffer
+  ///   The dataspace has one dimension and is sized to fit all elements in this object.
   H5::DataSpace createDataSpace();
 
   /// \brief Find the revision for this block - increased each time someone locks for writing.
+  /// \note Use LockedData::ConstOnly to not increase the revision on use.
   size_t revision() const { return m_revisionCount; }
 
-  /// \brief Wait for m_revisionCount to change (via another process).
+  /// \brief Block until m_revisionCount to change (via another process).
   void waitForChange(LockedData *lock);
 
 private:
@@ -44,7 +46,7 @@ private:
   friend class LockedData;
   };
 
-/// \brief A lock used to secure access to the data.
+/// \brief A lock used to secure access to the data, access
 class LockedData : public boost::interprocess::scoped_lock<boost::interprocess::interprocess_mutex>
   {
 public:
